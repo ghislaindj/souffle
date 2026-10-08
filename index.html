@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="fr" data-theme="dark" data-size="M">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Souffle</title>
+<meta name="description" content="Mes tablatures d'harmonica, hors ligne.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Souffle">
+<meta name="theme-color" content="#F6F3EE" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121418" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/plex-mono-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/plex-mono-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="styles.css">
+<script>
+  // Thème et taille appliqués avant le premier rendu, pour éviter un flash.
+  try {
+    var d = JSON.parse(localStorage.getItem('souffle:data') || 'null');
+    var r = (d && d.reglages) || {};
+    var t = r.theme === 'sombre' ? 'dark' : r.theme === 'clair' ? 'light'
+      : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.dataset.theme = t;
+    if (r.taille) document.documentElement.dataset.size = r.taille;
+  } catch (e) {}
+</script>
+<script type="module" src="app.js"></script>
+</head>
+<body>
+<div id="app"></div>
+<dialog id="dlg"></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+<noscript><p style="padding:24px">Souffle a besoin de JavaScript.</p></noscript>
+</body>
+</html>

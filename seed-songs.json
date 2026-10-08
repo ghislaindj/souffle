@@ -1,0 +1,130 @@
+{
+  "version": 1,
+  "chansons": [
+    {
+      "id": "oh-susanna",
+      "titre": "Oh! Susanna",
+      "artiste": "Stephen Foster",
+      "harmonica": "C",
+      "statut": "en_cours",
+      "phrases": {
+        "A": "+4 -4 +5 +6 +6 -6 +6 +5 +4 +4 -4 +5 +5 -4 +4 -4",
+        "B": "+4 -4 +5 +6 +6 -6 +6 +5 +4 +4 -4 +5 +5 -4 -4 +4",
+        "R": "-5 -5 -6 -6 -6 +6 +6 +5 +4 -4"
+      },
+      "sections": {
+        "couplet": ["A", "B", "A", "B"],
+        "refrain": ["R", "B"]
+      },
+      "structure": ["couplet", "refrain", "couplet", "refrain", "couplet", "refrain"],
+      "paroles": {
+        "couplet": [
+          ["I come from Alabama with a banjo on my knee",
+           "I'm going to Louisiana, my true love for to see",
+           "It rained all night the day I left, the weather it was dry",
+           "The sun so hot I froze to death, Susanna don't you cry"],
+          ["I had a dream the other night when everything was still",
+           "I thought I saw Susanna a-coming down the hill",
+           "The buckwheat cake was in her mouth, the tear was in her eye",
+           "Says I, I'm coming from the south, Susanna don't you cry"],
+          ["I soon will be in New Orleans, and then I'll look around",
+           "And when I find Susanna, I'll fall upon the ground",
+           "But if I do not find her, I surely will die",
+           "And when I'm dead and buried, Susanna don't you cry"]
+        ],
+        "refrain": [
+          ["Oh! Susanna, oh don't you cry for me",
+           "For I come from Alabama with a banjo on my knee"]
+        ]
+      },
+      "paroles_phrase": {},
+      "youtube": [],
+      "spotify": [],
+      "notes": ""
+    },
+    {
+      "id": "drunken-sailor",
+      "titre": "Drunken Sailor",
+      "artiste": "Traditionnel",
+      "harmonica": "C",
+      "statut": "en_cours",
+      "phrases": {
+        "V1": "-6 -6 -6 -6 -6 -6 -6 -4 -5 -6",
+        "V2": "+6 +6 +6 +6 +6 +6 +6 +4 +5 +6",
+        "R1": "-6 -6 -6 -6 -4 -5 -6",
+        "R2": "+6 +6 +6 +6 +4 +5 +6",
+        "F": "-7 +7 -8 +7 -6 +6 +5 -4"
+      },
+      "sections": {
+        "couplet": ["V1", "V2", "V1", "F"],
+        "refrain": ["R1", "R2", "R1", "F"]
+      },
+      "structure": ["couplet", "refrain", "couplet", "refrain", "couplet", "refrain",
+                    "couplet", "refrain", "couplet", "refrain", "couplet", "refrain"],
+      "paroles": {
+        "couplet": [
+          "What shall we do with a drunken sailor",
+          "Put him in the longboat till he's sober",
+          "Pull out the plug and wet him all over",
+          "Shave his belly with a rusty razor",
+          "Put him in the scuppers with a hosepipe on him",
+          "That's what we do with a drunken sailor"
+        ],
+        "refrain": ["Way hay and up she rises"]
+      },
+      "paroles_phrase": { "F": "Early in the morning" },
+      "youtube": [],
+      "spotify": [],
+      "notes": "3e position (ré dorien). Refrain déduit du couplet, à vérifier à l'oreille."
+    },
+    {
+      "id": "blowin-in-the-wind",
+      "titre": "Blowin' in the Wind",
+      "artiste": "Bob Dylan",
+      "harmonica": "C",
+      "statut": "en_cours",
+      "phrases": {
+        "Q1": "+6 +6 +6 -6 +6 -5 +6 +5 -4 +4",
+        "Q1b": "+5 +6 +6 +6 -6 +6 -5 +6",
+        "Q2": "+5 -5 +6 +6 +6 -6 +6 -5 +6 +5 -4 +4",
+        "Q2b": "+5 +6 +5 -5 -5 +5 -4",
+        "Q3": "+5 -5 +6 +6 +6 -6 +6 -5 +6 +6 +5 -4 +4",
+        "R1": "+5 -5 -5 +5 -4 -4 +5 +5 +5 -4 +4",
+        "R2": "+5 -5 -5 +5 -4 -4 +4 -3 +4"
+      },
+      "sections": {
+        "couplet": ["Q1", "Q1b", "Q2", "Q2b", "Q3", "Q1b"],
+        "refrain": ["R1", "R2"]
+      },
+      "structure": ["couplet", "refrain", "couplet", "refrain", "couplet", "refrain"],
+      "paroles": {},
+      "paroles_phrase": {},
+      "youtube": [],
+      "spotify": [],
+      "notes": "Paroles à coller. Version studio en ré : harmonica D pour jouer avec le disque."
+    },
+    {
+      "id": "flower-of-scotland",
+      "titre": "Flower of Scotland",
+      "artiste": "The Corries (Roy Williamson)",
+      "harmonica": "C",
+      "statut": "en_cours",
+      "phrases": {
+        "A": "+5 +5 -4 +4 +3 +3 +4 +5 -4",
+        "B": "-4 +4 -4 +5 +5 -5 -5 +6 +4",
+        "C": "+3 -4 -4 -4 +4 -4 +5",
+        "A2": "+5 +5 -4 +4 +3 +5 -5 -5 +6 +4",
+        "D": "+5 -5 +5 -4 +5 -4 +4 +4 -3 -4 +4"
+      },
+      "sections": {
+        "couplet": ["A", "B", "C", "A2", "D"]
+      },
+      "structure": ["couplet", "couplet", "couplet", "couplet"],
+      "paroles": {},
+      "paroles_phrase": {},
+      "youtube": [],
+      "spotify": [],
+      "notes": "Paroles à coller. 4e passage = reprise du 1er couplet. '+6 +4' en fin de B à vérifier."
+    }
+  ]
+}
