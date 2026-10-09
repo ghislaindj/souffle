@@ -1,6 +1,6 @@
 // Souffle — service worker cache-first.
 // Incrémenter CACHE à chaque release : l'activation purge les anciens caches.
-const CACHE = 'souffle-v1';
+const CACHE = 'souffle-v2';
 
 const FONTS = [
   'bricolage-600', 'bricolage-700',

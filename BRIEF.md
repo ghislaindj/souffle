@@ -43,10 +43,12 @@ Une chanson :
 
 **Notation des notes** : `+N` souffle, `-N` aspiration, N de 1 à 10. Bends : `'` par demi-ton (`-3'`, `-3''`). Overblow/overdraw : `o` en suffixe (`+6o`). Tout token non reconnu est affiché tel quel, sans planter.
 
+**Séparateurs (essentiels pour jouer)** : `|` = retour à la ligne imposé, repris tel quel des sources ; `,` = petite respiration, rendue par un espace élargi (≈ 3 fois l'espace normal). Les retours à la ligne `|` sont **toujours respectés**, en portrait comme en paysage ; le retour à la ligne automatique n'intervient qu'en plus, si une ligne dépasse la largeur de l'écran (et doit alors se signaler par un léger retrait).
+
 **Règles de rendu des paroles** (pour la k-ième occurrence d'une section dans `structure`) :
 1. Si `paroles_phrase[idPhrase]` existe, il gagne.
 2. Sinon, prendre l'entrée `paroles[section][k % longueur]`.
-3. Si l'entrée est une **liste**, sa i-ème ligne va sous la i-ème phrase de la section.
+3. Si l'entrée est une **liste**, sa i-ème ligne va sous la i-ème phrase de la section. Si cette ligne contient des `|` en même nombre que la phrase, chaque segment va sous sa ligne de tab ; sinon la ligne entière va sous la phrase.
 4. Si l'entrée est une **chaîne**, elle va sous chaque phrase de la section (cas Drunken Sailor).
 5. Pas de paroles : on n'affiche rien, la tablature reste seule.
 
@@ -63,7 +65,7 @@ Une chanson :
 ### Lecteur
 - En-tête : retour, titre, artiste, tonalité, bascule thème.
 - Barre d'outils : Paroles on/off, taille du texte (S/M/L, cycle), Écran actif on/off, défilement auto.
-- Corps : déroule `structure` en entier, section par section, avec label (« Couplet 2 », « Refrain »). Les phrases sont rendues en blocs de notes qui **reviennent à la ligne selon la largeur** (aucun retour à la ligne codé en dur).
+- Corps : déroule `structure` en entier, section par section, avec label (« Couplet 2 », « Refrain »). Les phrases sont rendues ligne par ligne selon leurs `|`, avec un espace vertical plus grand entre deux phrases qu'entre deux lignes d'une même phrase.
 - **Paysage** : deux colonnes quand la largeur le permet (≥ 700 px), police plus grande, label d'id de phrase discret à gauche.
 - **Option « structure compacte »** (paroles off) : n'afficher chaque section qu'une fois au lieu de dérouler toute la structure.
 - **Défilement auto** : vitesse réglable (3 crans), pause au toucher.
@@ -76,7 +78,8 @@ Une chanson :
 - **Export** : toutes les chansons en `souffle-AAAA-MM-JJ.json` via `navigator.share` (fichier), fallback téléchargement. Afficher la date du dernier export.
 - **Apparence** : Auto / Sombre / Clair (Auto = `prefers-color-scheme`).
 - Supprimer une chanson (avec confirmation).
-- Pas d'éditeur de tablature en V1 : l'édition passe par Claude puis réimport.
+- **Éditeur de paroles** : sur une chanson, saisir ou coller ses paroles section par section, une ligne par phrase, avec `|` pour aligner sur les lignes de tab. Indispensable pour les chansons protégées, que Claude ne peut pas renseigner.
+- Pas d'éditeur de tablature en V1 : l'édition passe par Claude puis réimport (le réimport ne doit **pas** écraser des paroles saisies dans l'app si le JSON importé n'en contient pas).
 
 ### Écran actif
 - Screen Wake Lock API (`navigator.wakeLock.request('screen')`), demandé à l'ouverture du lecteur si le réglage est actif.
@@ -111,7 +114,7 @@ Look sobre, pensé pour jouer harmonica en main : grosses cibles tactiles (≥ 4
 
 - Installable sur iPhone depuis Safari, s'ouvre en plein écran avec son icône.
 - Fonctionne en mode avion après une première ouverture.
-- Les 4 chansons du seed s'affichent correctement, y compris Drunken Sailor (paroles en chaîne + `paroles_phrase`) et Flower of Scotland (pas de refrain).
+- Les 4 chansons du seed s'affichent correctement, y compris les retours à la ligne `|` et respirations `,` identiques aux captures d'origine, Drunken Sailor (paroles alignées par segments) et Flower of Scotland (pas de refrain).
 - Rotation portrait ↔ paysage sans rechargement ni perte de position.
 - L'écran ne se met pas en veille pendant 10 min sur le lecteur avec Écran actif activé.
 - Export puis réimport du fichier = bibliothèque identique.

@@ -27,6 +27,7 @@ Ouvrir l'URL dans Safari, puis Partager › « Sur l'écran d'accueil ». Ouvrir
 - Tout est dans `localStorage`, clé `souffle:data` : `{version, chansons, reglages}`.
 - Au premier lancement, `seed-songs.json` est chargé.
 - Ajout ou modification de chansons : Bibliothèque › coller le JSON (une chanson, une liste ou l'objet complet). La fusion se fait par `id`.
+- Paroles : éditeur intégré (menu « … » du lecteur ou Bibliothèque), une ligne par phrase, `|` pour caler sur les lignes de tab. Un réimport sans paroles conserve celles saisies dans l'app.
 - Sauvegarde : Bibliothèque › Exporter (`souffle-AAAA-MM-JJ.json`).
 
 ## Contenu

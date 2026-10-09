@@ -43,6 +43,7 @@ const ICON = {
   share: svg('<path d="M12 3v12M7 8l5-5 5 5M5 14v5a2 2 0 002 2h10a2 2 0 002-2v-5"/>', 18),
   check: svg('<path d="M5 12l5 5L20 7"/>', 18),
   alert: svg('<circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.01"/>', 18),
+  lyrics: svg('<path d="M4 6h10M4 11h10M4 16h6"/><path d="M14.5 19.5l1-3.5 4.5-4.5a1.8 1.8 0 012.5 2.5L18 18.5z"/>'),
   trash: svg('<path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 002 2h6a2 2 0 002-2l1-12M9 7V4h6v3"/>'),
 };
 
@@ -139,14 +140,39 @@ function setSetting(k, v) {
 
 const NOTE_RE = /^([+-])(10|[1-9])(['’′]*)(o?)$/;
 
-function parseTokens(tab) {
-  return String(tab ?? '').trim().split(/\s+/).filter(Boolean).map((text) => {
-    const m = NOTE_RE.exec(text);
-    return { text, kind: m ? (m[1] === '-' ? 'draw' : 'blow') : 'other' };
-  });
+/**
+ * Découpe une phrase en lignes (`|` = retour à la ligne imposé) puis en notes.
+ * `,` = respiration : marquée sur la note qui précède (`breath`).
+ */
+function parseLines(tab) {
+  return String(tab ?? '').split('|').map((line) => {
+    const out = [];
+    for (const text of line.replace(/,/g, ' , ').trim().split(/\s+/).filter(Boolean)) {
+      if (text === ',') {
+        if (out.length) out[out.length - 1].breath = true;
+        continue;
+      }
+      const m = NOTE_RE.exec(text);
+      out.push({ text, kind: m ? (m[1] === '-' ? 'draw' : 'blow') : 'other', breath: false });
+    }
+    return out;
+  }).filter((line) => line.length);
 }
 
-const tokenHtml = (t) => `<span class="tok tok-${t.kind}">${esc(t.text)}</span>`;
+const parseTokens = (tab) => parseLines(tab).flat();
+
+const tokenHtml = (t) => `<span class="tok tok-${t.kind}${t.breath ? ' breath' : ''}">${esc(t.text)}</span>`;
+
+/** Lignes de tab d'une phrase, avec leurs paroles segmentées par `|` si le compte correspond. */
+function phraseRows(tab, lyric) {
+  const lines = parseLines(tab);
+  if (!lyric) return { rows: lines.map((tokens) => ({ tokens, lyric: null })), after: null };
+  const segs = lyric.split('|').map((s) => s.trim());
+  if (lines.length > 1 && segs.length === lines.length) {
+    return { rows: lines.map((tokens, i) => ({ tokens, lyric: segs[i] || null })), after: null };
+  }
+  return { rows: lines.map((tokens) => ({ tokens, lyric: null })), after: segs.filter(Boolean).join(' ') || null };
+}
 
 const isRefrain = (name) => /^(refrain|chorus)/i.test(name);
 const sectionName = (name) => name.replace(/[_-]+/g, ' ');
@@ -165,6 +191,14 @@ function structureSummary(song) {
     if (counts[n] > 1 && !isRefrain(n)) return `${counts[n]} ${/[sx]$/.test(label) ? label : `${label}s`}`;
     return label;
   }).join(' + ');
+}
+
+const filled = (v) => (typeof v === 'string' ? v.replace(/\|/g, '').trim() !== '' : Array.isArray(v) && v.some(filled));
+
+/** Vrai si la chanson a au moins une ligne de paroles. */
+function hasLyrics(s) {
+  return Object.values(isObj(s?.paroles) ? s.paroles : {}).some(filled)
+    || Object.values(isObj(s?.paroles_phrase) ? s.paroles_phrase : {}).some(filled);
 }
 
 function lyricFor(song, phraseId, entry, i) {
@@ -416,17 +450,25 @@ window.addEventListener('resize', () => {
   lastWidth = window.innerWidth;
   frozen = true;
   requestAnimationFrame(() => requestAnimationFrame(() => {
+    fitColumns();
     restoreAnchor();
-    frozen = false;
+    unfreezeSoon();
   }));
 });
+
+// Le scroll provoqué par la restauration ne doit pas remplacer l'ancre d'origine.
+let unfreezeTimer = 0;
+function unfreezeSoon() {
+  clearTimeout(unfreezeTimer);
+  unfreezeTimer = setTimeout(() => { frozen = false; }, 300);
+}
 
 /** Re-rend une partie du lecteur sans perdre la phrase en haut de l'écran. */
 function keepPosition(fn) {
   captureAnchor();
   frozen = true;
   fn();
-  requestAnimationFrame(() => { restoreAnchor(); frozen = false; });
+  requestAnimationFrame(() => { restoreAnchor(); unfreezeSoon(); });
 }
 
 /* ================= Vue : liste ================= */
@@ -540,6 +582,8 @@ function renderReader(id) {
     </div>`;
   renderToolbar();
   renderSheet();
+  // Les métriques changent quand les polices arrivent : on re-vérifie les colonnes.
+  document.fonts?.ready.then(() => { if (view === 'reader') fitColumns(); });
   if (data.reglages.ecranActif) wakeOn();
 }
 
@@ -564,17 +608,40 @@ function renderSheet() {
   const body = secs.map((sec, i) => `
     <section class="sec">
       <h2 class="label">${esc(sec.label)}</h2>
-      ${sec.lines.map((ln, j) => `
+      ${sec.lines.map((ln, j) => {
+        const { rows, after } = phraseRows(ln.tab, r.paroles ? ln.lyric : null);
+        return `
         <div class="phrase" data-k="${i}-${j}">
           <span class="pid" aria-hidden="true">${esc(ln.id)}</span>
-          <div class="tab">${parseTokens(ln.tab).map(tokenHtml).join('')}</div>
-          ${r.paroles && ln.lyric ? `<p class="lyr">${esc(ln.lyric)}</p>` : ''}
-        </div>`).join('')}
+          <div class="pbody">
+            ${rows.map((row) => `
+              <div class="row">
+                <div class="tab">${row.tokens.map(tokenHtml).join('')}</div>
+                ${row.lyric ? `<p class="lyr">${esc(row.lyric)}</p>` : ''}
+              </div>`).join('')}
+            ${after ? `<p class="lyr">${esc(after)}</p>` : ''}
+          </div>
+        </div>`;
+      }).join('')}
     </section>`).join('');
+  const noLyrics = r.paroles && !hasLyrics(song);
   $('#sheet').innerHTML = `
     ${compact ? `<p class="compact-note">Structure compacte · à jouer : ${esc(structureSummary(song))}</p>` : ''}
+    ${noLyrics ? `<p class="compact-note">Pas encore de paroles · <a class="inline-link" href="#/chanson/${encodeURIComponent(song.id)}/paroles">Ajouter les paroles</a></p>` : ''}
     <div class="secs">${body}</div>
     ${song.notes ? `<aside class="notes"><h2 class="label">Notes</h2><p>${esc(song.notes)}</p></aside>` : ''}`;
+  fitColumns();
+}
+
+/** Deux colonnes seulement si chaque ligne `|` y tient sans retour automatique. */
+function fitColumns() {
+  const secs = $('#sheet .secs');
+  if (!secs) return;
+  secs.classList.remove('one-col');
+  if (getComputedStyle(secs).display !== 'grid') return;
+  const wraps = [...secs.querySelectorAll('.tab')].some((tab) =>
+    tab.firstElementChild && tab.lastElementChild.offsetTop > tab.firstElementChild.offsetTop + 2);
+  secs.classList.toggle('one-col', wraps);
 }
 
 function safeUrl(u) {
@@ -582,8 +649,8 @@ function safeUrl(u) {
 }
 
 function spotifyLabel(u, i) {
-  const m = /(track|album|playlist|artist|episode)/.exec(u);
-  const kinds = { track: 'Titre', album: 'Album', playlist: 'Playlist', artist: 'Artiste', episode: 'Épisode' };
+  const m = /(track|album|playlist|artist|episode|search)/.exec(u);
+  const kinds = { track: 'Titre', album: 'Album', playlist: 'Playlist', artist: 'Artiste', episode: 'Épisode', search: 'Recherche' };
   return m ? `${kinds[m[1]]} Spotify` : `Lien Spotify ${i + 1}`;
 }
 
@@ -651,8 +718,9 @@ function renderLibrary() {
             <div class="song-row">
               <div class="song-row-text">
                 <div class="song-row-title">${esc(s.titre)}</div>
-                <div class="song-row-sub">${esc([s.artiste, `harmonica ${s.harmonica}`].filter(Boolean).join(' · '))}</div>
+                <div class="song-row-sub">${esc([s.artiste, `harmonica ${s.harmonica}`, hasLyrics(s) ? '' : 'sans paroles'].filter(Boolean).join(' · '))}</div>
               </div>
+              <a class="icon-btn" href="#/chanson/${encodeURIComponent(s.id)}/paroles" aria-label="Paroles de ${esc(s.titre)}">${ICON.lyrics}</a>
               <button type="button" class="icon-btn" data-action="delete" data-id="${esc(s.id)}" aria-label="Supprimer ${esc(s.titre)}">${ICON.trash}</button>
             </div>`).join('')}</div>` : '<p class="hint">Aucune chanson pour le moment.</p>'}
         </section>
@@ -700,6 +768,134 @@ function lastExportText() {
   if (!d) return 'Jamais exporté.';
   const date = new Date(d);
   return `Dernier export : ${date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })} à ${date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
+}
+
+/* ================= Vue : éditeur de paroles ================= */
+
+const tabLineCount = (tab) => Math.max(1, parseLines(tab).length);
+
+function passageLabel(name, k, occ) {
+  const base = cap(sectionName(name));
+  if (occ < 2) return base;
+  return isRefrain(name) ? `${base} · passage ${k + 1}` : `${base} ${k + 1}`;
+}
+
+function entryText(entry) {
+  if (Array.isArray(entry)) return entry.join('\n');
+  return typeof entry === 'string' ? entry : '';
+}
+
+function passageHtml(song, name, k, occ, entry) {
+  const ids = song.sections[name] || [];
+  const placeholder = ids.map((id) => {
+    const n = tabLineCount(song.phrases[id]);
+    return `${id} : paroles${n > 1 ? ` (${n} lignes de tab : sépare par ${n - 1 > 1 ? `${n - 1} ×` : 'un'} |)` : ''}`;
+  }).join('\n');
+  const tid = `ed-${k}-${encodeURIComponent(name)}`;
+  return `
+    <div class="ed-passage">
+      <label class="field-label" for="${esc(tid)}">${esc(passageLabel(name, k, occ))}</label>
+      <textarea class="ed-ta" id="${esc(tid)}" data-sec="${esc(name)}" data-str="${typeof entry === 'string' ? '1' : ''}"
+        rows="${Math.max(2, ids.length)}" spellcheck="true" autocapitalize="sentences" placeholder="${esc(placeholder)}">${esc(entryText(entry))}</textarea>
+      <div class="ed-check hint"></div>
+    </div>`;
+}
+
+function renderLyricsEditor(id) {
+  const song = data.chansons.find((s) => s.id === id);
+  if (!song) { renderReader(id); return; }
+  view = 'editor';
+  current = song;
+  ui.editorDirty = false;
+  const counts = countOccurrences(song.structure);
+  const fixed = Object.entries(song.paroles_phrase || {}).filter(([, v]) => filled(v));
+  const secs = Object.keys(counts).map((name) => {
+    const occ = counts[name];
+    let entries = has(song.paroles, name) ? song.paroles[name] : [];
+    if (!Array.isArray(entries)) entries = [entries];
+    const shown = Math.min(occ, Math.max(1, entries.length));
+    const ids = song.sections[name] || [];
+    const guide = ids.map((pid) => { const n = tabLineCount(song.phrases[pid]); return n > 1 ? `${pid} (${n} lignes)` : pid; }).join(' · ');
+    return `
+      <section class="block ed-sec" data-sec="${esc(name)}" data-occ="${occ}">
+        <h2 class="label">${esc(cap(sectionName(name)))}${occ > 1 ? ` · jouée ${occ} fois` : ''}</h2>
+        <p class="hint">Phrases : ${esc(guide)}</p>
+        <div class="ed-passages">${Array.from({ length: shown }, (_, k) => passageHtml(song, name, k, occ, entries[k])).join('')}</div>
+        ${shown < occ ? `<button type="button" class="btn" data-action="ed-add" data-sec="${esc(name)}">${ICON.plus}${esc(passageLabel(name, shown, occ))}</button>` : ''}
+      </section>`;
+  }).join('');
+
+  app.innerHTML = `
+    <div class="page lib editor">
+      <header class="lib-head">
+        <button type="button" class="icon-btn bare" data-action="ed-back" aria-label="Retour à la chanson">${ICON.back}</button>
+        <div class="r-title">
+          <h1 class="lib-title">Paroles</h1>
+          <p class="r-sub">${esc(song.titre)}</p>
+        </div>
+      </header>
+      <main class="lib-body">
+        <p>Une ligne par phrase, dans l'ordre. Mets un <code>|</code> pour caler les paroles sur les lignes de tab. Un passage laissé vide reste sans paroles. Si tu t'arrêtes avant la fin, les passages suivants reprennent depuis le début : un seul refrain suffit.</p>
+        ${fixed.length ? `<p class="hint">Paroles fixes, prioritaires : ${fixed.map(([pid, v]) => `${esc(pid)} « ${esc(v)} »`).join(', ')}.</p>` : ''}
+        ${secs}
+        <div class="btn-row ed-actions">
+          <button type="button" class="btn" data-action="ed-back">Annuler</button>
+          <button type="button" class="btn btn-primary" data-action="ed-save">Enregistrer</button>
+        </div>
+      </main>
+    </div>`;
+  app.querySelectorAll('.ed-ta').forEach(checkPassage);
+}
+
+/** Vérifie l'alignement d'un passage : nombre de lignes et de `|` par phrase. */
+function checkPassage(ta) {
+  const out = ta.parentElement.querySelector('.ed-check');
+  const ids = current.sections[ta.dataset.sec] || [];
+  const raw = ta.value.replace(/\r/g, '');
+  if (!raw.trim()) { out.textContent = ''; return; }
+  if (ta.dataset.str === '1' && !raw.includes('\n')) { out.textContent = 'Ligne unique, affichée sous chaque phrase.'; return; }
+  const lines = raw.split('\n');
+  while (lines.length && !lines[lines.length - 1].trim()) lines.pop();
+  const issues = [];
+  if (lines.length > ids.length) issues.push(`${lines.length} lignes pour ${ids.length} phrases : les lignes en trop sont ignorées.`);
+  lines.slice(0, ids.length).forEach((line, i) => {
+    const want = tabLineCount(current.phrases[ids[i]]);
+    const got = line.split('|').length;
+    if (line.trim() && want > 1 && got !== want) {
+      issues.push(`Ligne ${i + 1} (${ids[i]}) : ${want - 1} « | » attendu${want - 1 > 1 ? 's' : ''}, ${got - 1} trouvé${got - 1 > 1 ? 's' : ''}. Elle s'affichera en entier sous la phrase.`);
+    }
+  });
+  out.textContent = issues.length ? issues.join(' ') : 'Aligné sur la tablature.';
+}
+
+document.addEventListener('input', (e) => {
+  if (view === 'editor' && e.target.classList?.contains('ed-ta')) {
+    ui.editorDirty = true;
+    checkPassage(e.target);
+  }
+});
+
+function saveLyrics() {
+  const song = current;
+  const paroles = { ...song.paroles };
+  app.querySelectorAll('.ed-sec').forEach((sec) => {
+    const name = sec.dataset.sec;
+    const entries = [...sec.querySelectorAll('.ed-ta')].map((ta) => {
+      const raw = ta.value.replace(/\r/g, '');
+      if (ta.dataset.str === '1' && raw === ta.defaultValue) return raw; // chaîne d'origine intacte
+      const lines = raw.split('\n').map((l) => l.trim());
+      while (lines.length && !lines[lines.length - 1]) lines.pop();
+      return lines;
+    });
+    while (entries.length && !filled(entries[entries.length - 1])) entries.pop();
+    if (entries.length) paroles[name] = entries;
+    else delete paroles[name];
+  });
+  song.paroles = paroles;
+  save();
+  ui.editorDirty = false;
+  location.hash = `#/chanson/${encodeURIComponent(song.id)}`;
+  toast('Paroles enregistrées.');
 }
 
 /* ================= Import ================= */
@@ -779,15 +975,22 @@ function analyzeImport(text) {
       // Statut absent de l'import : on garde la progression existante.
       const existing = data.chansons.find((x) => x.id === s.id);
       if (s.statut == null && existing) song.statut = existing.statut;
-      songs.push(song);
+      // Import sans paroles : on garde celles saisies dans l'app.
+      let keptLyrics = false;
+      if (existing && !hasLyrics(song) && hasLyrics(existing)) {
+        song.paroles = clone(existing.paroles);
+        song.paroles_phrase = clone(existing.paroles_phrase);
+        keptLyrics = true;
+      }
+      songs.push({ song, keptLyrics });
     }
   });
   if (errors.length) return { errors };
 
-  const items = songs.map((s) => {
-    const existing = data.chansons.find((x) => x.id === s.id);
-    const state = !existing ? 'nouvelle' : JSON.stringify(existing) === JSON.stringify(s) ? 'identique' : 'maj';
-    return { song: s, state };
+  const items = songs.map(({ song, keptLyrics }) => {
+    const existing = data.chansons.find((x) => x.id === song.id);
+    const state = !existing ? 'nouvelle' : JSON.stringify(existing) === JSON.stringify(song) ? 'identique' : 'maj';
+    return { song, state, keptLyrics };
   });
   return { items };
 }
@@ -818,7 +1021,7 @@ function updateImport() {
   const tags = { nouvelle: 'nouvelle', maj: 'mise à jour', identique: 'identique' };
   status.innerHTML = `<div class="msg msg-ok">${ICON.check}<div>
     <strong>${plural(a.items.length, 'chanson')} reconnue${a.items.length > 1 ? 's' : ''}</strong> · ${parts.join(', ')}
-    <ul>${a.items.map((it) => `<li>${esc(it.song.titre)} <span class="tag">(${tags[it.state]})</span></li>`).join('')}</ul>
+    <ul>${a.items.map((it) => `<li>${esc(it.song.titre)} <span class="tag">(${tags[it.state]}${it.keptLyrics ? ', paroles conservées' : ''})</span></li>`).join('')}</ul>
     ${c.nouvelle + c.maj === 0 ? '<div>Rien à importer : la bibliothèque est déjà à jour.</div>' : ''}
   </div></div>`;
   const n = c.nouvelle + c.maj;
@@ -942,7 +1145,8 @@ function songMenuHtml() {
         <p class="hint">Chaque section une seule fois. Masque les paroles.</p>
       </div>
       <button type="button" class="switch" role="switch" aria-labelledby="compact-lbl" aria-checked="${r.compact && !r.paroles}" data-action="compact"></button>
-    </div>`;
+    </div>
+    <a class="btn" href="#/chanson/${encodeURIComponent(s.id)}/paroles">${ICON.lyrics}${hasLyrics(s) ? 'Modifier les paroles' : 'Ajouter les paroles'}</a>`;
 }
 
 /* ================= Actions ================= */
@@ -972,6 +1176,7 @@ const actions = {
       setSetting('taille', SIZES[(SIZES.indexOf(r.taille) + 1) % SIZES.length]);
       applySize();
       renderToolbar();
+      fitColumns();
     });
   },
   wake() {
@@ -1028,6 +1233,22 @@ const actions = {
     applyTheme();
     $('#theme-seg').innerHTML = themeSeg();
   },
+  'ed-add'(el) {
+    const sec = el.closest('.ed-sec');
+    const name = sec.dataset.sec;
+    const occ = Number(sec.dataset.occ);
+    const k = sec.querySelectorAll('.ed-ta').length;
+    sec.querySelector('.ed-passages').insertAdjacentHTML('beforeend', passageHtml(current, name, k, occ, undefined));
+    sec.querySelectorAll('.ed-ta')[k].focus();
+    if (k + 1 >= occ) el.remove();
+    else el.innerHTML = `${ICON.plus}${esc(passageLabel(name, k + 1, occ))}`;
+  },
+  async 'ed-back'() {
+    if (ui.editorDirty && !(await confirmBox('Abandonner les modifications ?', 'Les paroles saisies ne seront pas enregistrées.', 'Abandonner', true))) return;
+    ui.editorDirty = false;
+    location.hash = `#/chanson/${encodeURIComponent(current.id)}`;
+  },
+  'ed-save'() { saveLyrics(); },
   'pick-file'() { $('#imp-file').click(); },
   import() { doImport(); },
   export() { doExport(); },
@@ -1062,7 +1283,11 @@ function route() {
 
   const h = location.hash;
   const m = /^#\/chanson\/(.+)$/.exec(h);
-  if (m) {
+  const ed = /^#\/chanson\/([^/]+)\/paroles$/.exec(h);
+  if (ed) {
+    renderLyricsEditor(decodeURIComponent(ed[1]));
+    window.scrollTo(0, 0);
+  } else if (m) {
     renderReader(decodeURIComponent(m[1]));
     window.scrollTo(0, 0);
   } else if (h === '#/bibliotheque') {

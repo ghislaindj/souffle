@@ -8,38 +8,68 @@
       "harmonica": "C",
       "statut": "en_cours",
       "phrases": {
-        "A": "+4 -4 +5 +6 +6 -6 +6 +5 +4 +4 -4 +5 +5 -4 +4 -4",
-        "B": "+4 -4 +5 +6 +6 -6 +6 +5 +4 +4 -4 +5 +5 -4 -4 +4",
-        "R": "-5 -5 -6 -6 -6 +6 +6 +5 +4 -4"
+        "A": "+4 -4 +5 +6 +6 -6 +6 +5 +4 | +4 -4 +5 +5 -4 +4 -4",
+        "B": "+4 -4 +5 +6 +6 -6 +6 +5 +4 | +4 -4 +5 +5 -4 -4 +4",
+        "R": "-5 -5 -6 -6 , -6 +6 +6 | +5 +4 -4"
       },
       "sections": {
-        "couplet": ["A", "B", "A", "B"],
-        "refrain": ["R", "B"]
-      },
-      "structure": ["couplet", "refrain", "couplet", "refrain", "couplet", "refrain"],
-      "paroles": {
         "couplet": [
-          ["I come from Alabama with a banjo on my knee",
-           "I'm going to Louisiana, my true love for to see",
-           "It rained all night the day I left, the weather it was dry",
-           "The sun so hot I froze to death, Susanna don't you cry"],
-          ["I had a dream the other night when everything was still",
-           "I thought I saw Susanna a-coming down the hill",
-           "The buckwheat cake was in her mouth, the tear was in her eye",
-           "Says I, I'm coming from the south, Susanna don't you cry"],
-          ["I soon will be in New Orleans, and then I'll look around",
-           "And when I find Susanna, I'll fall upon the ground",
-           "But if I do not find her, I surely will die",
-           "And when I'm dead and buried, Susanna don't you cry"]
+          "A",
+          "B",
+          "A",
+          "B"
         ],
         "refrain": [
-          ["Oh! Susanna, oh don't you cry for me",
-           "For I come from Alabama with a banjo on my knee"]
+          "R",
+          "B"
+        ]
+      },
+      "structure": [
+        "couplet",
+        "refrain",
+        "couplet",
+        "refrain",
+        "couplet",
+        "refrain"
+      ],
+      "paroles": {
+        "couplet": [
+          [
+            "I come from Alabama with a | banjo on my knee",
+            "I'm going to Louisiana, | my true love for to see",
+            "It rained all night the day I left, the | weather it was dry",
+            "The sun so hot I froze to death, | Susanna don't you cry"
+          ],
+          [
+            "I had a dream the other night when | everything was still",
+            "I thought I saw Susanna a-coming | down the hill",
+            "The buckwheat cake was in her mouth, the | tear was in her eye",
+            "Says I, I'm coming from the south, | Susanna don't you cry"
+          ],
+          [
+            "I soon will be in New Orleans, and | then I'll look around",
+            "And when I find Susanna, I'll | fall upon the ground",
+            "But if I do not find her, | I surely will die",
+            "And when I'm dead and buried, | Susanna don't you cry"
+          ]
+        ],
+        "refrain": [
+          [
+            "Oh! Susanna, oh don't you | cry for me",
+            "For I come from Alabama with a | banjo on my knee"
+          ]
         ]
       },
       "paroles_phrase": {},
-      "youtube": [],
-      "spotify": [],
+      "youtube": [
+        {
+          "titre": "Recherche : Oh Susanna harmonica tuto",
+          "url": "https://www.youtube.com/results?search_query=Oh+Susanna+harmonica+tuto"
+        }
+      ],
+      "spotify": [
+        "https://open.spotify.com/search/Oh%21%20Susanna"
+      ],
       "notes": ""
     },
     {
@@ -49,32 +79,90 @@
       "harmonica": "C",
       "statut": "en_cours",
       "phrases": {
-        "V1": "-6 -6 -6 -6 -6 -6 -6 -4 -5 -6",
-        "V2": "+6 +6 +6 +6 +6 +6 +6 +4 +5 +6",
-        "R1": "-6 -6 -6 -6 -4 -5 -6",
-        "R2": "+6 +6 +6 +6 +4 +5 +6",
-        "F": "-7 +7 -8 +7 -6 +6 +5 -4"
+        "V1": "-6 , -6 -6 -6 , -6 -6 -6 | -4 -5 -6",
+        "V2": "+6 , +6 +6 +6 , +6 +6 +6 | +4 +5 +6",
+        "V3": "-6 , -6 -6 -6 , -6 -6 -6 | -7 +7 -8 +7 -6 +6 +5 -4",
+        "R1": "-6 -6 -6 -6 | -4 -5 -6",
+        "R2": "+6 +6 +6 +6 | +4 +5 +6",
+        "R3": "-6 -6 -6 -6 | -7 +7 -8 +7 -6 +6 +5 -4"
       },
       "sections": {
-        "couplet": ["V1", "V2", "V1", "F"],
-        "refrain": ["R1", "R2", "R1", "F"]
+        "couplet": [
+          "V1",
+          "V2",
+          "V3"
+        ],
+        "refrain": [
+          "R1",
+          "R2",
+          "R3"
+        ]
       },
-      "structure": ["couplet", "refrain", "couplet", "refrain", "couplet", "refrain",
-                    "couplet", "refrain", "couplet", "refrain", "couplet", "refrain"],
+      "structure": [
+        "couplet",
+        "refrain",
+        "couplet",
+        "refrain",
+        "couplet",
+        "refrain",
+        "couplet",
+        "refrain",
+        "couplet",
+        "refrain",
+        "couplet",
+        "refrain"
+      ],
       "paroles": {
         "couplet": [
-          "What shall we do with a drunken sailor",
-          "Put him in the longboat till he's sober",
-          "Pull out the plug and wet him all over",
-          "Shave his belly with a rusty razor",
-          "Put him in the scuppers with a hosepipe on him",
-          "That's what we do with a drunken sailor"
+          [
+            "What shall we do with a | drunken sailor",
+            "What shall we do with a | drunken sailor",
+            "What shall we do with a | drunken sailor, early in the morning"
+          ],
+          [
+            "Put him in the longboat | till he's sober",
+            "Put him in the longboat | till he's sober",
+            "Put him in the longboat | till he's sober, early in the morning"
+          ],
+          [
+            "Pull out the plug and | wet him all over",
+            "Pull out the plug and | wet him all over",
+            "Pull out the plug and | wet him all over, early in the morning"
+          ],
+          [
+            "Shave his belly | with a rusty razor",
+            "Shave his belly | with a rusty razor",
+            "Shave his belly | with a rusty razor, early in the morning"
+          ],
+          [
+            "Put him in the scuppers | with a hosepipe on him",
+            "Put him in the scuppers | with a hosepipe on him",
+            "Put him in the scuppers | with a hosepipe on him, early in the morning"
+          ],
+          [
+            "That's what we do with a | drunken sailor",
+            "That's what we do with a | drunken sailor",
+            "That's what we do with a | drunken sailor, early in the morning"
+          ]
         ],
-        "refrain": ["Way hay and up she rises"]
+        "refrain": [
+          [
+            "Way hay and up | she rises",
+            "Way hay and up | she rises",
+            "Way hay and up | she rises, early in the morning"
+          ]
+        ]
       },
-      "paroles_phrase": { "F": "Early in the morning" },
-      "youtube": [],
-      "spotify": [],
+      "paroles_phrase": {},
+      "youtube": [
+        {
+          "titre": "Recherche : Drunken Sailor harmonica tuto",
+          "url": "https://www.youtube.com/results?search_query=Drunken+Sailor+harmonica+tuto"
+        }
+      ],
+      "spotify": [
+        "https://open.spotify.com/search/Drunken%20Sailor"
+      ],
       "notes": "3e position (ré dorien). Refrain déduit du couplet, à vérifier à l'oreille."
     },
     {
@@ -93,15 +181,39 @@
         "R2": "+5 -5 -5 +5 -4 -4 +4 -3 +4"
       },
       "sections": {
-        "couplet": ["Q1", "Q1b", "Q2", "Q2b", "Q3", "Q1b"],
-        "refrain": ["R1", "R2"]
+        "couplet": [
+          "Q1",
+          "Q1b",
+          "Q2",
+          "Q2b",
+          "Q3",
+          "Q1b"
+        ],
+        "refrain": [
+          "R1",
+          "R2"
+        ]
       },
-      "structure": ["couplet", "refrain", "couplet", "refrain", "couplet", "refrain"],
+      "structure": [
+        "couplet",
+        "refrain",
+        "couplet",
+        "refrain",
+        "couplet",
+        "refrain"
+      ],
       "paroles": {},
       "paroles_phrase": {},
-      "youtube": [],
-      "spotify": [],
-      "notes": "Paroles à coller. Version studio en ré : harmonica D pour jouer avec le disque."
+      "youtube": [
+        {
+          "titre": "Recherche : Blowin in the Wind harmonica tuto",
+          "url": "https://www.youtube.com/results?search_query=Blowin+in+the+Wind+harmonica+tuto"
+        }
+      ],
+      "spotify": [
+        "https://open.spotify.com/search/Blowin%27%20in%20the%20Wind%20Bob%20Dylan"
+      ],
+      "notes": "Version studio en ré : harmonica D pour jouer avec le disque."
     },
     {
       "id": "flower-of-scotland",
@@ -117,14 +229,32 @@
         "D": "+5 -5 +5 -4 +5 -4 +4 +4 -3 -4 +4"
       },
       "sections": {
-        "couplet": ["A", "B", "C", "A2", "D"]
+        "couplet": [
+          "A",
+          "B",
+          "C",
+          "A2",
+          "D"
+        ]
       },
-      "structure": ["couplet", "couplet", "couplet", "couplet"],
+      "structure": [
+        "couplet",
+        "couplet",
+        "couplet",
+        "couplet"
+      ],
       "paroles": {},
       "paroles_phrase": {},
-      "youtube": [],
-      "spotify": [],
-      "notes": "Paroles à coller. 4e passage = reprise du 1er couplet. '+6 +4' en fin de B à vérifier."
+      "youtube": [
+        {
+          "titre": "Recherche : Flower of Scotland harmonica tuto",
+          "url": "https://www.youtube.com/results?search_query=Flower+of+Scotland+harmonica+tuto"
+        }
+      ],
+      "spotify": [
+        "https://open.spotify.com/search/Flower%20of%20Scotland%20The%20Corries"
+      ],
+      "notes": "4e passage = reprise du 1er couplet. '-55' de la source lu comme '-5 +5' ; '+6 +4' en fin de B à vérifier."
     }
   ]
 }

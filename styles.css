@@ -230,13 +230,25 @@ html[data-theme='dark'] .ic-moon, html[data-theme='light'] .ic-sun { display: no
 @media (min-width: 700px) {
   .secs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 40px; row-gap: 28px; align-items: start; }
 }
-.sec { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
-.phrase { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+/* Une ligne ne tient pas dans une colonne : on repasse sur une seule (voir fitColumns). */
+.secs.one-col { display: flex; flex-direction: column; gap: 28px; }
+/* Espace entre phrases (22px) nettement plus grand qu'entre lignes d'une phrase. */
+.sec { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+.sec > .label { margin-bottom: -8px; }
+.phrase { display: flex; flex-direction: column; min-width: 0; }
 .pid { display: none; }
+.pbody { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.row { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+/* Une ligne `|` par .tab ; si elle déborde, la suite revient avec un léger retrait. */
 .tab {
   display: flex; flex-wrap: wrap; column-gap: 0.5em; row-gap: 2px;
+  padding-left: 1.2em;
   font-family: var(--mono); font-size: var(--tab); line-height: 1.35;
 }
+.tab > .tok:first-child { margin-left: -1.2em; }
+/* Respiration `,` : espace ≈ 3 fois l'espace normal. */
+.tok.breath { margin-right: 1em; }
+.preview .tok.breath { margin-right: 0; }
 .lyr { font-size: calc(var(--tab) * 0.75); color: var(--muted); font-style: italic; line-height: 1.35; }
 
 @media (orientation: landscape) {
@@ -245,7 +257,7 @@ html[data-theme='dark'] .ic-moon, html[data-theme='light'] .ic-sun { display: no
     display: block; grid-row: 1; font-family: var(--mono); font-size: 11px; font-weight: 600;
     color: var(--faint); overflow: hidden; text-overflow: ellipsis;
   }
-  .phrase .tab, .phrase .lyr { grid-column: 2; }
+  .phrase .pbody { grid-column: 2; }
 }
 
 .notes {
@@ -326,8 +338,17 @@ html[data-theme='dark'] .ic-moon, html[data-theme='light'] .ic-sun { display: no
 textarea {
   width: 100%; min-height: 120px; padding: 12px; border-radius: 12px;
   border: 1px solid var(--line); background: var(--card); color: var(--blow);
-  font-family: var(--mono); font-size: 13px; line-height: 1.5; resize: vertical;
+  font-family: var(--mono); font-size: 16px; line-height: 1.5; resize: vertical;
 }
+.ed-ta { font-family: var(--sans); color: var(--text); min-height: 0; }
+.ed-sec { gap: 10px; }
+.ed-passages { display: flex; flex-direction: column; gap: 14px; }
+.ed-passage { display: flex; flex-direction: column; gap: 6px; }
+.ed-check:empty { display: none; }
+.ed-actions { position: sticky; bottom: 0; padding: 12px 0 calc(var(--sb) + 12px); background: var(--bg); }
+.lib-body code { font-family: var(--mono); color: var(--draw); font-weight: 700; }
+.inline-link { color: var(--blow); text-decoration: underline; text-underline-offset: 3px; display: inline-flex; align-items: center; min-height: 44px; }
+.editor .r-title .lib-title { line-height: 1.2; }
 textarea::placeholder { color: var(--faint); }
 
 .btn-row { display: flex; gap: 10px; }
